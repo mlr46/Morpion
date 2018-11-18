@@ -1,18 +1,28 @@
 package com.mlr.morpion.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mlr.morpion.R;
+import com.mlr.morpion.models.Mark;
+
+import java.util.Locale;
+
+import static com.mlr.morpion.activities.MorpionActivity.EXTRA_GRID_SIZE;
 
 public class MainActivity extends AppCompatActivity {
 
-  private Button startBtn;
+  private static final int MIN_SIZE = 1;
+
   private TextView tvGridSize;
   private SeekBar sizeChoice;
+  private int gridSize;
 
 
   @Override
@@ -20,33 +30,48 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+
     sizeChoice = findViewById(R.id.grid_size);
-    sizeChoice.setOnSeekBarChangeListener(
-      new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
+    tvGridSize = findViewById(R.id.grid_size_label);
+    sizeChoice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      @Override
+      public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        gridSize = progress;
+        updateDisplay();
       }
-    );
-    // add listener here
-    startBtn = findViewById(R.id.startBtn);
-    startBtn.on
+
+      @Override
+      public void onStartTrackingTouch(SeekBar seekBar) {
+
+      }
+
+      @Override
+      public void onStopTrackingTouch(SeekBar seekBar) {
+
+      }
+    });
+  }
+
+  public void startGame(View view) {
+    if (gridSize >= MIN_SIZE) {
+      Intent intent = new Intent(this, MorpionActivity.class);
+      intent.putExtra(EXTRA_GRID_SIZE, gridSize);
+      startActivity(intent);
+    } else {
+      showInvalidSize();
+    }
+  }
+
+  private void showInvalidSize() {
+    Toast toast = Toast.makeText(this, "Invalid size...", Toast.LENGTH_SHORT);
+    toast.show();
   }
 
   /**
-   * Should call the new view to create a grid of size gridSize * gridSize
-   * @param size
+   * For the time being, the update display function will update the grid size label.
    */
-  private void startGame(int size) {}
+  private void updateDisplay() {
+    String gridSizeText = String.format(Locale.getDefault(), "%1$d x %1$d", gridSize);
+    tvGridSize.setText(gridSizeText);
+  }
 }
