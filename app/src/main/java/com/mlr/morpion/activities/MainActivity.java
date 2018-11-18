@@ -19,4 +19,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
+    /**
+     * Should call the new view to create a grid of size gridSize * gridSize
+     * @param size
+     */
+    private void startGame(int size) {}
 }
