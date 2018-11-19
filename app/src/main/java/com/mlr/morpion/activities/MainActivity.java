@@ -16,7 +16,7 @@ import static com.mlr.morpion.activities.MorpionActivity.EXTRA_GRID_SIZE;
 
 public class MainActivity extends AppCompatActivity {
 
-  private static final int MIN_SIZE = 1;
+  private static final int MIN_SIZE = 10;
 
   private TextView tvGridSize;
   private SeekBar sizeChoice;
@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     sizeChoice = findViewById(R.id.grid_size);
     tvGridSize = findViewById(R.id.grid_size_label);
+
+    initializeSeekbar();
     sizeChoice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override
       public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -48,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
 
       }
     });
+  }
+
+  private void initializeSeekbar() {
+    gridSize = MIN_SIZE;
+    sizeChoice.setProgress(gridSize);
+    updateDisplay();
   }
 
   public void startGame(View view) {
