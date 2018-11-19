@@ -9,5 +9,8 @@ OpenClassrooms:
 
 ## Screenshots
 
-![Choosing a grid size](./Morpion_2.png)
-![On win!](./Morpion_1.png)
+
+<p float="left">
+  <img src="./Morpion_2.png" width="30%" />
+  <img src="./Morpion_1.png" width="30%" />
+</p>
