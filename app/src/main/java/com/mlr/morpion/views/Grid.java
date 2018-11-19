@@ -4,22 +4,23 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.AttributeSet;
 import android.view.View;
 
-import com.mlr.morpion.models.Mark;
-import com.mlr.morpion.models.MarkValue;
+import com.mlr.morpion.models.Token;
+import com.mlr.morpion.models.Solution;
 
 public class Grid extends View {
 
   private Paint gridPaint;
   private Paint crossPaint;
   private Paint naughtPaint;
+  private Paint winPaint;
   private int gridSize;
-  private MarkValue[][] history;
+  private Token[][] history;
   private int cellSize;
+  private Solution solution;
 
-  public Grid(Context context, int gridSize, MarkValue[][] history) {
+  public Grid(Context context, int gridSize, Token[][] history) {
     super(context);
     this.gridSize = gridSize;
     this.history = history;
@@ -37,12 +38,17 @@ public class Grid extends View {
 
     crossPaint = new Paint();
     crossPaint.setColor(Color.BLUE);
-    crossPaint.setStrokeWidth(3);
+    crossPaint.setStrokeWidth(8);
 
     naughtPaint = new Paint();
     naughtPaint.setColor(Color.GREEN);
-    naughtPaint.setStrokeWidth(3);
+    naughtPaint.setStrokeWidth(8);
     naughtPaint.setStyle(Paint.Style.STROKE);
+
+    winPaint = new Paint();
+    winPaint.setColor(Color.RED);
+    winPaint.setStrokeWidth(20);
+
   }
 
   /**
@@ -53,13 +59,18 @@ public class Grid extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    cellSize = Math.min(getHeight(), getWidth()) / gridSize;
+    this.cellSize = Math.min(getHeight(), getWidth()) / gridSize;
     drawGrid(canvas);
     drawHistory(canvas);
+    drawSolution(canvas);
   }
 
   public int getCellSize() {
     return cellSize;
+  }
+
+  public void setSolution(Solution solution) {
+    this.solution = solution;
   }
 
   public boolean isOnBoard(int pointX, int pointY) {
@@ -74,15 +85,31 @@ public class Grid extends View {
     }
   }
 
+  /**
+   * We know the solution goes from (solution.startX, solution.startY) until (solution.endX, solution.endY).
+   * We want to draw the line that connect the center of both those cells.
+   * @param canvas
+   */
+  private void drawSolution(Canvas canvas) {
+    if (solution != null) {
+      int centerStartX = (int)(cellSize * (solution.getStartX() + 0.5));
+      int centerStartY = (int)(cellSize * (solution.getStartY() + 0.5));
+      int centerEndX = (int)(cellSize * (solution.getEndX() + 0.5));
+      int centerEndY = (int)(cellSize * (solution.getEndY() + 0.5));
+
+      canvas.drawLine(centerStartX, centerStartY, centerEndX, centerEndY, winPaint);
+    }
+  }
+
   private void drawHistory(Canvas canvas) {
 
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
-        if (history[i][j] == MarkValue.EMPTY) {
+        if (history[i][j] == Token.EMPTY) {
           continue;
         }
 
-        if (history[i][j] == MarkValue.CROSS) {
+        if (history[i][j] == Token.CROSS) {
           drawCross(i, j, canvas);
         } else {
           drawNought(i, j, canvas);
@@ -90,6 +117,7 @@ public class Grid extends View {
       }
     }
   }
+
 
   private void drawCross(int i, int j, Canvas canvas) {
     canvas.drawLine(i * cellSize, j * cellSize, (i + 1) * cellSize, (j + 1) * cellSize, crossPaint);

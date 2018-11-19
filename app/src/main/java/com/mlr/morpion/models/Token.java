@@ -1,6 +1,6 @@
 package com.mlr.morpion.models;
 
-public enum MarkValue {
+public enum Token {
 
   CROSS,
   NOUGHT,
