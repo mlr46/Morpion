@@ -21,12 +21,19 @@ public class MorpionActivity extends AppCompatActivity {
 
   public static final String EXTRA_GRID_SIZE = "com.mlr.morpion.activities.morpionActivity.gridSize";
   private static final int ADJACENT_FOR_WIN = 5;
+  private static final int[][] DIRECTIONS = {
+    {1, 0}, // horizontal
+    {0, 1}, // vertical
+    {1, 1}, // diagonal \
+    {1, -1}, // diagonal /
+  };
 
   private boolean isPlayer1;
   private int gridSize;
   private Grid grid;
   private Token[][] history;
   private Toast invalidSpotToast;
+  private Toast winnerToast;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +49,7 @@ public class MorpionActivity extends AppCompatActivity {
   }
 
   private void init() {
+
     Intent intent = getIntent();
     gridSize = intent.getIntExtra(EXTRA_GRID_SIZE, 20);
 
@@ -60,11 +68,13 @@ public class MorpionActivity extends AppCompatActivity {
    */
   public boolean play(MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_UP) {
-      int pointX = (int) event.getX() / grid.getCellSize();
-      int pointY = (int) event.getY() / grid.getCellSize();
-      if (grid.isOnBoard(pointX, pointY)) {
-        if (placeMark(pointX, pointY)) {
-          if (!isGameOver(pointX, pointY)) {
+      Point point = Point.newBuilder()
+        .setX((int) event.getX() / grid.getCellSize())
+        .setY((int) event.getY() / grid.getCellSize())
+        .build();
+      if (grid.isOnBoard(point)) {
+        if (placeMark(point)) {
+          if (!isGameOver(point)) {
             togglePlayer();
           }
         }
@@ -75,9 +85,9 @@ public class MorpionActivity extends AppCompatActivity {
     return true;
   }
 
-  private boolean placeMark(int pointX, int pointY) {
+  private boolean placeMark(Point point) {
 
-    if (history[pointX][pointY] != EMPTY) {
+    if (history[point.getX()][point.getY()] != EMPTY) {
       invalidSpotToast.show();
       return false;
     }
@@ -85,7 +95,7 @@ public class MorpionActivity extends AppCompatActivity {
     invalidSpotToast.cancel();
 
     Token token = getMarkValue();
-    history[pointX][pointY] = token;
+    history[point.getX()][point.getY()] = token;
     return true;
   }
 
@@ -112,29 +122,29 @@ public class MorpionActivity extends AppCompatActivity {
     isPlayer1 = !isPlayer1;
   }
 
-  private boolean isGameOver(int pointX, int pointY) {
+  /**
+   * Checks whether the given point creates a line of more that {@code ADJACENT_FOR_WIN} tokens in
+   * all 4 possible directions (horizontal, vertical, both diagonals) by checking how many similar
+   * tokens exist in the given direction before and after the point.
+   * @param point
+   * @return
+   */
+  private boolean isGameOver(Point point) {
 
-    // add the mark to the grid
-    // Analyze the grid to see if latest player has won
-    int[][] directions = {
-      {1, 0}, // horizontal
-      {0, 1}, // vertical
-      {1, 1}, // diagonal \
-      {1, -1}, // diagonal /
-    };
-
-    for (int[] direction : directions) {
-      int adjacentAfter = countAdjacent(pointX, pointY, direction[0], direction[1]);
-      int adjacentBefore = countAdjacent(pointX, pointY, -direction[0], -direction[1]);
+    for (int[] direction : DIRECTIONS) {
+      int adjacentAfter = countAdjacent(point, direction[0], direction[1]);
+      int adjacentBefore = countAdjacent(point, -direction[0], -direction[1]);
       int totalAdjacentMarks = adjacentBefore + 1 + adjacentAfter;
       if (totalAdjacentMarks >= ADJACENT_FOR_WIN) {
 
-        Solution solution = new Solution(
-          pointX - adjacentBefore * direction[0],
-          pointX + adjacentAfter * direction[0],
-          pointY - adjacentBefore * direction[1],
-          pointY + adjacentAfter * direction[1]);
+        Solution solution = Solution.newBuilder()
+          .setStartX(point.getX() - adjacentBefore * direction[0])
+          .setEndX(point.getX() + adjacentAfter * direction[0])
+          .setStartY(point.getY() - adjacentBefore * direction[1])
+          .setEndY(point.getY() + adjacentAfter * direction[1])
+          .build();
         grid.setSolution(solution);
+        postWinnerToast(history[point.getX()][point.getY()]);
         grid.setOnTouchListener(null);
 
         return true;
@@ -144,12 +154,18 @@ public class MorpionActivity extends AppCompatActivity {
     return false;
   }
 
-  private int countAdjacent(int pointX, int pointY, int deltaX, int deltaY) {
+  private void postWinnerToast(Token winningToken) {
+    String message = String.format("%s win!", winningToken.getTokenName());
+    winnerToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+    winnerToast.show();
+  }
 
-    Token mark = history[pointX][pointY];
+  private int countAdjacent(Point point, int deltaX, int deltaY) {
 
-    int nextX = pointX + deltaX;
-    int nextY = pointY + deltaY;
+    Token mark = history[point.getX()][point.getY()];
+
+    int nextX = point.getX() + deltaX;
+    int nextY = point.getY() + deltaY;
     int adjacents = 0;
     while (nextX >= 0 && nextX < gridSize && nextY >= 0 && nextY < gridSize) {
 

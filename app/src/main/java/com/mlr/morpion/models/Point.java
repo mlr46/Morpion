@@ -17,4 +17,27 @@ public class Point {
   public int getY() {
     return y;
   }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private int x;
+    private int y;
+
+    public Builder setX(int x) {
+      this.x = x;
+      return this;
+    }
+
+    public Builder setY(int y) {
+      this.y = y;
+      return this;
+    }
+
+    public Point build() {
+      return new Point(x, y);
+    }
+  }
 }

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
+import com.mlr.morpion.models.Point;
 import com.mlr.morpion.models.Token;
 import com.mlr.morpion.models.Solution;
 
@@ -19,6 +20,7 @@ public class Grid extends View {
   private Token[][] history;
   private int cellSize;
   private Solution solution;
+
 
   public Grid(Context context, int gridSize, Token[][] history) {
     super(context);
@@ -65,6 +67,19 @@ public class Grid extends View {
     drawSolution(canvas);
   }
 
+  /**
+   * Call this view's OnClickListener, if it is defined.  Performs all normal
+   * actions associated with clicking: reporting accessibility event, playing
+   * a sound, etc.
+   *
+   * @return True there was an assigned OnClickListener that was called, false
+   * otherwise is returned.
+   */
+  @Override
+  public boolean performClick() {
+    return super.performClick();
+  }
+
   public int getCellSize() {
     return cellSize;
   }
@@ -73,9 +88,9 @@ public class Grid extends View {
     this.solution = solution;
   }
 
-  public boolean isOnBoard(int pointX, int pointY) {
-    return pointX >= 0 && pointX < gridSize &&
-      pointX >= 0 && pointY < gridSize;
+  public boolean isOnBoard(Point point) {
+    return point.getX() >= 0 && point.getX() < gridSize &&
+      point.getY() >= 0 && point.getY() < gridSize;
   }
 
   private void drawGrid(Canvas canvas) {
