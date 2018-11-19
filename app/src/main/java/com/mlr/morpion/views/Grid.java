@@ -17,6 +17,7 @@ public class Grid extends View {
   private Paint naughtPaint;
   private int gridSize;
   private MarkValue[][] history;
+  private int cellSize;
 
   public Grid(Context context, int gridSize, MarkValue[][] history) {
     super(context);
@@ -52,22 +53,28 @@ public class Grid extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    int cellSize = Math.min(getHeight(), getWidth()) / gridSize;
-
-    drawGrid(canvas, cellSize);
-    drawHistory(canvas, cellSize);
-
+    cellSize = Math.min(getHeight(), getWidth()) / gridSize;
+    drawGrid(canvas);
+    drawHistory(canvas);
   }
 
-  private void drawGrid(Canvas canvas, int cellSize) {
+  public int getCellSize() {
+    return cellSize;
+  }
 
+  public boolean isOnBoard(int pointX, int pointY) {
+    return pointX >= 0 && pointX < gridSize &&
+      pointX >= 0 && pointY < gridSize;
+  }
+
+  private void drawGrid(Canvas canvas) {
     for (int i = 1; i <= gridSize; i++) {
       canvas.drawLine(0, cellSize * i, gridSize * cellSize, cellSize * i, gridPaint);
       canvas.drawLine(cellSize * i, 0, cellSize * i, gridSize * cellSize, gridPaint);
     }
   }
 
-  private void drawHistory(Canvas canvas, int cellSize) {
+  private void drawHistory(Canvas canvas) {
 
     for (int i = 0; i < gridSize; i++) {
       for (int j = 0; j < gridSize; j++) {
@@ -76,20 +83,20 @@ public class Grid extends View {
         }
 
         if (history[i][j] == MarkValue.CROSS) {
-          drawCross(i, j, cellSize, canvas);
+          drawCross(i, j, canvas);
         } else {
-          drawNought(i, j, cellSize, canvas);
+          drawNought(i, j, canvas);
         }
       }
     }
   }
 
-  private void drawCross(int i, int j, int cellSize, Canvas canvas) {
+  private void drawCross(int i, int j, Canvas canvas) {
     canvas.drawLine(i * cellSize, j * cellSize, (i + 1) * cellSize, (j + 1) * cellSize, crossPaint);
     canvas.drawLine((i + 1) * cellSize, j * cellSize, i * cellSize, (j + 1) * cellSize, crossPaint);
   }
 
-  private void drawNought(int i, int j, int cellSize, Canvas canvas) {
+  private void drawNought(int i, int j, Canvas canvas) {
     int radius = cellSize / 2;
     canvas.drawCircle((int)(cellSize * (i + 0.5)), (int)(cellSize * (j + 0.5)), radius, naughtPaint);
   }
