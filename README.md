@@ -1,6 +1,6 @@
 # Morpion
 
-Android Project # 2
+My second Android project!
 
 ## Project Source / Instructions
 
