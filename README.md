@@ -9,5 +9,5 @@ OpenClassrooms:
 
 ## Screenshots
 
-[Choosing a grid size](./Morpion_1.png)
-[On win!](./Morpion_2.png)
+![Choosing a grid size](./Morpion_2.png)
+![On win!](./Morpion_1.png)
