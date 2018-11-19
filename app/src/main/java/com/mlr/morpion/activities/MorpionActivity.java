@@ -1,5 +1,8 @@
 package com.mlr.morpion.activities;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,6 +36,7 @@ public class MorpionActivity extends AppCompatActivity {
   private Grid grid;
   private Token[][] history;
   private Toast invalidSpotToast;
+  private Token winningToken;
   private Toast winnerToast;
 
   @Override
@@ -144,7 +148,8 @@ public class MorpionActivity extends AppCompatActivity {
           .setEndY(point.getY() + adjacentAfter * direction[1])
           .build();
         grid.setSolution(solution);
-        postWinnerToast(history[point.getX()][point.getY()]);
+        setWinningToken(history[point.getX()][point.getY()]);
+        announceWinner();
         grid.setOnTouchListener(null);
 
         return true;
@@ -154,10 +159,21 @@ public class MorpionActivity extends AppCompatActivity {
     return false;
   }
 
-  private void postWinnerToast(Token winningToken) {
-    String message = String.format("%s win!", winningToken.getTokenName());
-    winnerToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
-    winnerToast.show();
+  private void setWinningToken(Token winningToken) {
+    this.winningToken = winningToken;
+  }
+
+  private void announceWinner() {
+    AlertDialog alertDialog = new AlertDialog.Builder(this)
+      .setMessage(String.format("%s wins!", winningToken.getTokenName()))
+      .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          finish();
+        }
+      })
+      .create();
+    alertDialog.show();
   }
 
   private int countAdjacent(Point point, int deltaX, int deltaY) {
