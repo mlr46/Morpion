@@ -44,8 +44,9 @@ public class MorpionActivity extends AppCompatActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    init();
     setContentView(R.layout.morpion);
+    init();
+
 
     grid.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -62,9 +63,14 @@ public class MorpionActivity extends AppCompatActivity {
     history = initializeGrid(gridSize);
     isPlayer1 = true;
     invalidSpotToast = Toast.makeText(this, "Try another spot...", Toast.LENGTH_SHORT);
-    grid = new Grid(this, gridSize, history);
+
+    grid = findViewById(R.id.grid);
+    grid.setGridSize(gridSize);
+    grid.setHistory(history);
+    grid.setReadyToDraw();
 
     textView = findViewById(R.id.next_player);
+
     setNextPlayer();
   }
 

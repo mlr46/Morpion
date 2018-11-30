@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.view.View;
 
 import com.mlr.morpion.models.Point;
@@ -20,14 +21,23 @@ public class Grid extends View {
   private Token[][] history;
   private int cellSize;
   private Solution solution;
+  private boolean isReadyToDraw;
 
-
-  public Grid(Context context, int gridSize, Token[][] history) {
-    super(context);
-    this.gridSize = gridSize;
-    this.history = history;
-
+  public Grid(Context context, AttributeSet attributeSet) {
+    super(context, attributeSet);
     init();
+  }
+
+  public void setGridSize(int gridSize) {
+    this.gridSize = gridSize;
+  }
+
+  public void setHistory(Token[][] history) {
+    this.history = history;
+  }
+
+  public void setReadyToDraw() {
+    this.isReadyToDraw = true;
   }
 
   /**
@@ -37,6 +47,7 @@ public class Grid extends View {
 
     gridPaint = new Paint();
     gridPaint.setColor(Color.BLACK);
+
 
     crossPaint = new Paint();
     crossPaint.setColor(Color.BLUE);
@@ -61,10 +72,15 @@ public class Grid extends View {
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);
-    this.cellSize = Math.min(getHeight(), getWidth()) / gridSize;
-    drawGrid(canvas);
-    drawHistory(canvas);
-    drawSolution(canvas);
+
+    if (isReadyToDraw) {
+
+    this.cellSize = Math.min(getMeasuredHeight(), getMeasuredWidth()) / gridSize;
+
+      drawGrid(canvas);
+      drawHistory(canvas);
+      drawSolution(canvas);
+    }
   }
 
   /**
@@ -94,7 +110,7 @@ public class Grid extends View {
   }
 
   private void drawGrid(Canvas canvas) {
-    for (int i = 1; i <= gridSize; i++) {
+    for (int i = 0; i <= gridSize; i++) {
       canvas.drawLine(0, cellSize * i, gridSize * cellSize, cellSize * i, gridPaint);
       canvas.drawLine(cellSize * i, 0, cellSize * i, gridSize * cellSize, gridPaint);
     }
