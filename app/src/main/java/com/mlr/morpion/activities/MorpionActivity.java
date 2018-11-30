@@ -9,8 +9,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mlr.morpion.R;
 import com.mlr.morpion.models.Point;
 import com.mlr.morpion.models.Token;
 import com.mlr.morpion.models.Solution;
@@ -37,12 +39,13 @@ public class MorpionActivity extends AppCompatActivity {
   private Token[][] history;
   private Toast invalidSpotToast;
   private Token winningToken;
-  private Toast winnerToast;
+  private TextView textView;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     init();
+    setContentView(R.layout.morpion);
 
     grid.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -56,13 +59,22 @@ public class MorpionActivity extends AppCompatActivity {
 
     Intent intent = getIntent();
     gridSize = intent.getIntExtra(EXTRA_GRID_SIZE, 20);
-
     history = initializeGrid(gridSize);
     isPlayer1 = true;
     invalidSpotToast = Toast.makeText(this, "Try another spot...", Toast.LENGTH_SHORT);
-
     grid = new Grid(this, gridSize, history);
-    setContentView(grid);
+
+    textView = findViewById(R.id.next_player);
+    setNextPlayer();
+  }
+
+  private void setNextPlayer() {
+
+    if (isPlayer1) {
+      textView.setText(R.string.crosses_player);
+    } else {
+      textView.setText(R.string.naught_player);
+    }
   }
 
 
@@ -124,6 +136,7 @@ public class MorpionActivity extends AppCompatActivity {
 
   private void togglePlayer() {
     isPlayer1 = !isPlayer1;
+    setNextPlayer();
   }
 
   /**
