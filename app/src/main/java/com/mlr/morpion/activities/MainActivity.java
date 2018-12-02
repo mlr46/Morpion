@@ -32,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
     sizeChoice = findViewById(R.id.grid_size);
     tvGridSize = findViewById(R.id.grid_size_label);
 
-    initializeSeekbar();
+    initializeGrid();
     sizeChoice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override
       public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        gridSize = progress;
+        gridSize = progress + MIN_SIZE;
         updateDisplay();
       }
 
@@ -52,29 +52,19 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-  private void initializeSeekbar() {
+  private void initializeGrid() {
     gridSize = MIN_SIZE;
-    sizeChoice.setProgress(gridSize);
     updateDisplay();
   }
 
   public void startGame(View view) {
-    if (gridSize >= MIN_SIZE) {
-      Intent intent = new Intent(this, MorpionActivity.class);
-      intent.putExtra(EXTRA_GRID_SIZE, gridSize);
-      startActivity(intent);
-    } else {
-      showInvalidSize();
-    }
-  }
-
-  private void showInvalidSize() {
-    Toast toast = Toast.makeText(this, "Invalid size...", Toast.LENGTH_SHORT);
-    toast.show();
+    Intent intent = new Intent(this, MorpionActivity.class);
+    intent.putExtra(EXTRA_GRID_SIZE, gridSize);
+    startActivity(intent);
   }
 
   /**
-   * For the time being, the update display function will update the grid size label.
+   * Updates the text view with the current size of the grid.
    */
   private void updateDisplay() {
     String gridSizeText = String.format(Locale.getDefault(), "%1$d x %1$d", gridSize);
