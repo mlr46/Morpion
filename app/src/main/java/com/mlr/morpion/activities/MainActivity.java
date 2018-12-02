@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mlr.morpion.R;
 
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     sizeChoice = findViewById(R.id.grid_size);
     tvGridSize = findViewById(R.id.grid_size_label);
 
-    initializeGrid();
+    initializeSeekBar();
     sizeChoice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override
       public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-  private void initializeGrid() {
+  private void initializeSeekBar() {
     gridSize = MIN_SIZE;
     updateDisplay();
   }
